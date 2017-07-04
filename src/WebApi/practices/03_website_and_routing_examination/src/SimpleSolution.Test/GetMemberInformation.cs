@@ -73,6 +73,9 @@ namespace SimpleSolution.Test
                 .Select(mi => "Public constructor: " + string.Join(", ", mi.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}")))
                 .ToArray();
 
+            //type.GetConstructors().orderBy().thenBy().select(toDescription);
+            //getMembers will get all properties and methd;
+
             var nameOfIndexField = type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.GetIndexParameters().Length > 0)
                 .Select(mi => "Indexed property Item: Public getter.")
@@ -83,7 +86,7 @@ namespace SimpleSolution.Test
                 .Select(p => $"Normal property {p.Name}: Public getter.")
                 .ToArray();
 
-            var methodOfPublic = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Default)
+            var methodOfPublic = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
                 .Where(mi => !mi.IsSpecialName)
                 .Select(mi => $"Public method {mi.Name}: " + string.Join(", ", mi.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}")))
                 .ToArray();
