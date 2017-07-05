@@ -38,9 +38,9 @@ namespace SimpleSolution.Test
         {
             if(source == null || keySelector == null) throw new ArgumentNullException();
 
-            var dictionary = source.Distinct().ToDictionary(keySelector, valueSelector);
-//            var dictionary = source.GroupBy(s => s).Where(g => g.Any()).Select(p => p.First())
-//                .ToDictionary(keySelector, valueSelector);
+            var dictionary = source
+                .GroupBy(keySelector, comparer)
+                .ToDictionary(g => g.Key, g => valueSelector(overwriteDuplicated ? g.Last() : g.First()));
 
             return dictionary;
         }
