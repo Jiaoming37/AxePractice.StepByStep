@@ -1,4 +1,6 @@
-﻿namespace LocalApi
+﻿using System.Net.Http;
+
+namespace LocalApi
 {
     public class HttpController
     {
