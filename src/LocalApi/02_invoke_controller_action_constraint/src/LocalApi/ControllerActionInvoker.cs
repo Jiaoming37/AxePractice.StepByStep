@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using LocalApi.MethodAttributes;
 
 namespace LocalApi
 {
@@ -35,6 +37,16 @@ namespace LocalApi
 
         static HttpResponseMessage ProcessConstraint(MethodInfo method, HttpMethod methodConstraint)
         {
+            var allowedMethods = method.GetCustomAttributes()
+                .Where(attibute => attibute.GetType() == typeof(HttpGet) || attibute.GetType() == typeof(HttpPost) ||
+                                   attibute.GetType() == typeof(HttpPut) || attibute.GetType() == typeof(HttpDelete))
+                .Select(attibute => (attibute as IMethodProvider).Method)
+                .ToList();
+
+            if (!allowedMethods.Contains(methodConstraint))
+            {
+                return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
+            }
             return null;
         }
 
