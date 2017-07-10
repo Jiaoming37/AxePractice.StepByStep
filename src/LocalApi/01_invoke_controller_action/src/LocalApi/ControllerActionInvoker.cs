@@ -13,10 +13,8 @@ namespace LocalApi
             HttpController httpController = actionDescriptor.Controller;
             var actionName = actionDescriptor.ActionName;
 
-            Type type = httpController.GetType();
-            MethodInfo methodInfo = type
-                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
-                .SingleOrDefault(method => method.Name.Equals(actionName, StringComparison.OrdinalIgnoreCase));
+            MethodInfo methodInfo = httpController.GetType()
+                .GetMethod(actionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
 
             if (methodInfo == null)
             {
