@@ -8,6 +8,7 @@ namespace LocalApi
 {
     static class ControllerActionInvoker
     {
+<<<<<<< HEAD
         #region Please modify the code to pass the test
 
         /*
@@ -24,6 +25,8 @@ namespace LocalApi
          * we assume that all actions contains no parameter.
          */
 
+=======
+>>>>>>> fe282a8e04facf0c0f0edf76fcf0532928286751
         public static HttpResponseMessage InvokeAction(ActionDescriptor actionDescriptor)
         {
             HttpController httpController = actionDescriptor.Controller;
@@ -46,7 +49,10 @@ namespace LocalApi
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
+<<<<<<< HEAD
 
         #endregion
+=======
+>>>>>>> fe282a8e04facf0c0f0edf76fcf0532928286751
     }
 }

@@ -37,17 +37,11 @@ namespace LocalApi
 
         static HttpResponseMessage ProcessConstraint(MethodInfo method, HttpMethod methodConstraint)
         {
-            var allowedMethods = method.GetCustomAttributes()
-                .Where(attibute => attibute.GetType() == typeof(HttpGet) || attibute.GetType() == typeof(HttpPost) ||
-                                   attibute.GetType() == typeof(HttpPut) || attibute.GetType() == typeof(HttpDelete))
-                .Select(attibute => (attibute as IMethodProvider).Method)
-                .ToList();
+            var hasMethod = method.GetCustomAttributes()
+                .Where(attibute => attibute is IMethodProvider)
+                .Any(attibute => ((IMethodProvider) attibute).Method.Equals(methodConstraint));
 
-            if (!allowedMethods.Contains(methodConstraint))
-            {
-                return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
-            }
-            return null;
+            return hasMethod ? null : new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
         }
 
         #endregion
@@ -72,7 +66,9 @@ namespace LocalApi
             Type controllerType = controller.GetType();
             const BindingFlags controllerActionBindingFlags =
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
-            return controllerType.GetMethod(actionName, controllerActionBindingFlags);
+
+            MethodInfo method = controllerType.GetMethod(actionName, controllerActionBindingFlags);
+            return method;
         }
     }
 }
