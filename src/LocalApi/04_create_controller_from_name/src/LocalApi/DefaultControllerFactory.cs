@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LocalApi
 {
@@ -12,7 +13,17 @@ namespace LocalApi
         {
             #region Please modify the following code to pass the test.
 
-            throw new NotImplementedException();
+            Type type = null;
+            try
+            {
+                type = controllerTypes.SingleOrDefault(t => t.Name.Equals(controllerName, StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                throw new ArgumentException();
+            }
+
+            return type == null ? null : (HttpController)resolver.GetService(type);
 
             #endregion
         }
