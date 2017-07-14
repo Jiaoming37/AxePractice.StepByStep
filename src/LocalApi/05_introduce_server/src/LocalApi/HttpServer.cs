@@ -29,7 +29,7 @@ namespace LocalApi
             HttpRoute route = configuration.Routes.GetRouteData(request);
             if (route == null)
             {
-                return Task.Run(() => new HttpResponseMessage(HttpStatusCode.NotFound), cancellationToken);
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
             }
 
             HttpResponseMessage response = ControllerActionInvoker.InvokeAction(
