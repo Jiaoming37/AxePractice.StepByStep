@@ -80,9 +80,22 @@ namespace LocalApi
 
         static async Task<HttpResponseMessage> Execute(ActionDescriptor actionDescriptor, MethodInfo method)
         {
-            object response = method.Invoke(actionDescriptor.Controller, null);
-            var result = response as HttpResponseMessage;
-            return await (result != null ? Task.FromResult(result) : (Task<HttpResponseMessage>)response);
+            try
+            {
+                object response = method.Invoke(actionDescriptor.Controller, null);
+
+                var synResult = response as HttpResponseMessage;
+                if (synResult != null) return await Task.FromResult(synResult);
+
+                var isAsynResult = response as Task<HttpResponseMessage>;
+                if (isAsynResult != null) return await (Task<HttpResponseMessage>) response;
+
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+            }
+            catch
+            {
+                return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+            }
         }
 
         #endregion
