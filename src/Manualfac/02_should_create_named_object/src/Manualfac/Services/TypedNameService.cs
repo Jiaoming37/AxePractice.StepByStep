@@ -4,6 +4,9 @@ namespace Manualfac.Services
 {
     class TypedNameService : Service, IEquatable<TypedNameService>
     {
+        readonly Type serviceType;
+        readonly string name;
+
         #region Please modify the following code to pass the test
 
         /*
@@ -12,22 +15,25 @@ namespace Manualfac.Services
 
         public TypedNameService(Type serviceType, string name)
         {
-            throw new NotImplementedException();
+            this.serviceType = serviceType;
+            this.name = name;
         }
 
         public bool Equals(TypedNameService other)
         {
-            throw new NotImplementedException();
+            if (other == null) return false;
+            return serviceType == other.serviceType && name == other.name;
         }
 
         public override bool Equals(object obj)
         {
-            throw new NotImplementedException();
+            if (!(obj is TypedNameService)) return false;
+            return this.Equals((TypedNameService) obj);
         }
 
         public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            return serviceType.GetHashCode() ^ name.GetHashCode();
         }
 
         #endregion

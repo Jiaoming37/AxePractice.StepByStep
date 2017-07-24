@@ -7,6 +7,8 @@ namespace LocalApi
     {
         #region Please modify the following code to pass the test
 
+        List<Type> controllerTypes;
+
         /*
          * The dependency resolver is kind of a IoC service to create instances for
          * specified types as well as managing their lifetime. In this practice, it
@@ -24,17 +26,17 @@ namespace LocalApi
 
         internal DefaultDependencyResolver(IEnumerable<Type> controllerTypes)
         {
-            throw new NotImplementedException();
+            this.controllerTypes = new List<Type>(controllerTypes);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            controllerTypes = null;
         }
 
         public object GetService(Type type)
         {
-            throw new NotImplementedException();
+            return controllerTypes.Contains(type) ? Activator.CreateInstance(type) : null;
         }
 
         #endregion

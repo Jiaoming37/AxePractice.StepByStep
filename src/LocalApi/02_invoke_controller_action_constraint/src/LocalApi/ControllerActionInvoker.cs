@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using LocalApi.MethodAttributes;
 
 namespace LocalApi
 {
@@ -35,7 +37,11 @@ namespace LocalApi
 
         static HttpResponseMessage ProcessConstraint(MethodInfo method, HttpMethod methodConstraint)
         {
-            return null;
+            var hasMethod = method.GetCustomAttributes()
+                .Where(attibute => attibute is IMethodProvider)
+                .Any(attibute => ((IMethodProvider) attibute).Method.Equals(methodConstraint));
+
+            return hasMethod ? null : new HttpResponseMessage(HttpStatusCode.MethodNotAllowed);
         }
 
         #endregion
@@ -60,7 +66,9 @@ namespace LocalApi
             Type controllerType = controller.GetType();
             const BindingFlags controllerActionBindingFlags =
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
-            return controllerType.GetMethod(actionName, controllerActionBindingFlags);
+
+            MethodInfo method = controllerType.GetMethod(actionName, controllerActionBindingFlags);
+            return method;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Manualfac
 {
@@ -16,15 +17,30 @@ namespace Manualfac
          * 
          * You can add non-public member functions or member variables as you like.
          */
+        readonly IDictionary<Type, object> registrations;
+        IComponentContext context;
+        bool hasBuild;
+
+        public ContainerBuilder()
+        {
+            registrations = new Dictionary<Type, object>();
+        }
 
         public void Register<T>(Func<IComponentContext, T> func)
         {
-            throw new NotImplementedException();
+            context = new ComponentContext(registrations);
+            T result = func(context);
+            registrations[typeof(T)] = result;
         }
 
         public IComponentContext Build()
         {
-            throw new NotImplementedException();
+            if (hasBuild)
+            {
+                throw new InvalidOperationException();
+            }
+            hasBuild = true;
+            return context;
         }
 
         #endregion

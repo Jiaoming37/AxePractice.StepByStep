@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LocalApi
 {
@@ -10,15 +11,25 @@ namespace LocalApi
             ICollection<Type> controllerTypes,
             IDependencyResolver resolver)
         {
-            #region Please modify the following code to pass the test.
-
-            /*
+             /*
              * The controller factory will create controller by its name. It will search
              * form the controllerTypes collection to get the correct controller type,
              * then create instance from resolver.
              */
 
-            throw new NotImplementedException();
+            #region Please modify the following code to pass the test.
+
+            Type type = null;
+            try
+            {
+                type = controllerTypes.SingleOrDefault(t => t.Name.Equals(controllerName, StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                throw new ArgumentException();
+            }
+
+            return type == null ? null : (HttpController)resolver.GetService(type);
 
             #endregion
         }
