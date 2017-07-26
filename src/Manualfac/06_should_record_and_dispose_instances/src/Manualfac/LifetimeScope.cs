@@ -26,11 +26,7 @@ namespace Manualfac
             ComponentRegistration componentRegistration = GetComponentRegistration(service);
             object resolveComponent = componentRegistration.Activator.Activate(this);
 
-            var disposableComponent = resolveComponent as IDisposable;
-            if (disposableComponent != null)
-            {
-                disposer.AddItemsToDispose(resolveComponent);
-            }
+            disposer.AddItemsToDispose(resolveComponent);
 
             return resolveComponent;
 

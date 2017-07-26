@@ -17,7 +17,11 @@ namespace Manualfac
         {
             if(item == null) throw new ArgumentNullException(nameof(item));
 
-            items.Push((IDisposable)item);
+            var disposableItem = item as IDisposable;
+            if (disposableItem != null)
+            {
+                items.Push((IDisposable)item);
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -26,8 +30,7 @@ namespace Manualfac
             {
                 while (items.Count > 0)
                 {
-                    IDisposable item = items.Pop();
-                    item.Dispose();
+                    items.Pop().Dispose();
                 }
                 items = null;
             }
