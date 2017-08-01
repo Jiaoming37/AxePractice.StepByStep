@@ -54,8 +54,12 @@ namespace Manualfac
                         return component;
                     }
                 }
+            }
 
-                object instance = registration.Activator.Activate(this);
+            object instance = registration.Activator.Activate(this);
+
+            lock (syncObj)
+            {
                 Disposer.AddItemsToDispose(instance);
 
                 if (registration.Sharing == InstanceSharing.Shared)
