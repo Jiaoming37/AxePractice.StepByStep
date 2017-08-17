@@ -107,6 +107,12 @@
     <Compile Include="MessageController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HandleResponsePractice\HandleResponsePractice.csproj">
+      <Project>{B2B3ADA7-3EFC-466F-BEDB-6D02AFA74052}</Project>
+      <Name>HandleResponsePractice</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
