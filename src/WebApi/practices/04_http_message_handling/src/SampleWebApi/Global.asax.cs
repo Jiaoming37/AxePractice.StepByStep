@@ -3,7 +3,6 @@ using System.Web;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
-using HandleResponsePractice;
 using Newtonsoft.Json.Serialization;
 
 namespace SampleWebApi
@@ -13,7 +12,6 @@ namespace SampleWebApi
         protected void Application_Start(object sender, EventArgs e)
         {
             HttpConfiguration config = GlobalConfiguration.Configuration;
-            config.MessageHandlers.Add(new MessageHandler());
             InitContainer(config);
             InitRoute(config);
             InitFormatters(config);
