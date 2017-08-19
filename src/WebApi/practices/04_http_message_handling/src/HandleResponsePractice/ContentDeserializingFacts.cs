@@ -17,6 +17,8 @@ namespace HandleResponsePractice
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
+            object content = null;
+
             #region Please modifies the following code to pass the test
 
             // I just want { id, sizes } here. Please deserialize the content. You cannot
