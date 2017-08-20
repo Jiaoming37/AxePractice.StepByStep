@@ -18,13 +18,13 @@ namespace SampleWebApi.Services
         {
             if (roleRepository.Get(userId) == Role.Admin) { return false; }
 
-            var linksArray = restrictedResource["links"] as JArray;
+            var linksArray = restrictedResource["Links"] as JArray;
             if (linksArray == null) { return false; }
             JToken[] restrictedLinks = linksArray.Where(
                 item =>
                 {
                     var linkItemObj = item as JObject;
-                    var restrictedProp = linkItemObj?["restricted"];
+                    var restrictedProp = linkItemObj?["Restricted"];
                     if (restrictedProp?.Type != JTokenType.Boolean) { return false; }
                     return restrictedProp.Value<bool>();
                 }).ToArray();

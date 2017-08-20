@@ -25,7 +25,7 @@ namespace HandleResponsePractice
             // change any code beyond the region.
 
             string result = await response.Content.ReadAsStringAsync();
-            object content = JsonConvert.DeserializeAnonymousType(result, new { id = default(int), sizes = default(IEnumerable<string>) });
+            content = JsonConvert.DeserializeAnonymousType(result, new { id = default(int), sizes = default(IEnumerable<string>) });
             #endregion
 
             Assert.Equal(2, content.GetPublicDeclaredProperties().Length);

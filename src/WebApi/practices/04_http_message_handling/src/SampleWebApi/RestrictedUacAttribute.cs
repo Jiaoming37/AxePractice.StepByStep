@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Filters;
+using Newtonsoft.Json.Linq;
+using SampleWebApi.Repositories;
+using SampleWebApi.Services;
 
 namespace SampleWebApi
 {
@@ -21,6 +26,9 @@ namespace SampleWebApi
         #region Please implement the class to pass the test
 
         readonly string userIdArgumentName;
+        static readonly RoleRepository RoleRepository = new RoleRepository();
+        readonly RestrictedUacContractService restrictedUacContractService = new RestrictedUacContractService(RoleRepository);
+
 
         /*
          * The attribute takes an argument of the name of the userId parameter in
@@ -35,8 +43,9 @@ namespace SampleWebApi
          */
         public RestrictedUacAttribute(string userIdArgumentName)
         {
-            throw new NotImplementedException();
+            this.userIdArgumentName = userIdArgumentName;
         }
+
 
         /*
          * The action filter for ASP.NET web API is async nativelly. So we simply
@@ -49,7 +58,36 @@ namespace SampleWebApi
             HttpActionExecutedContext context,
             CancellationToken token)
         {
-            throw new NotImplementedException();
+            await base.OnActionExecutedAsync(context, token);
+
+            if (!userIdArgumentName.Equals("userId"))
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            if (context.Response.StatusCode == HttpStatusCode.NotAcceptable || context.Response.Content == null)
+            {
+                return;
+            }
+
+            dynamic restrictedResource = await context.Response.Content.ReadAsAsync<object>(token);
+
+            if (((string)restrictedResource.Type).Equals("No Parameter"))
+            {
+                context.Response.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
+            var userId = long.Parse(context.Request.RequestUri.AbsolutePath
+                .Split(new []{"/"}, StringSplitOptions.RemoveEmptyEntries)[1]);
+
+            JObject resourceToJObject = JObject.FromObject(restrictedResource);
+            restrictedUacContractService.RemoveRestrictedInfo(
+                userId,
+                resourceToJObject);
+
+            context.Response = context.Request.CreateResponse(HttpStatusCode.OK, resourceToJObject);
         }
 
         #endregion
