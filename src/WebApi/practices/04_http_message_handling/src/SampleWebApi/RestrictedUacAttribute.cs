@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Dependencies;
 using System.Web.Http.Filters;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SampleWebApi.Repositories;
 using SampleWebApi.Services;
 
 namespace SampleWebApi
@@ -26,9 +29,6 @@ namespace SampleWebApi
         #region Please implement the class to pass the test
 
         readonly string userIdArgumentName;
-        static readonly RoleRepository RoleRepository = new RoleRepository();
-        readonly RestrictedUacContractService restrictedUacContractService = new RestrictedUacContractService(RoleRepository);
-
 
         /*
          * The attribute takes an argument of the name of the userId parameter in
@@ -43,7 +43,7 @@ namespace SampleWebApi
          */
         public RestrictedUacAttribute(string userIdArgumentName)
         {
-            this.userIdArgumentName = userIdArgumentName;
+            this.userIdArgumentName = userIdArgumentName ?? throw new ArgumentNullException(nameof(userIdArgumentName));
         }
 
 
@@ -58,36 +58,60 @@ namespace SampleWebApi
             HttpActionExecutedContext context,
             CancellationToken token)
         {
-            await base.OnActionExecutedAsync(context, token);
+            if(context == null) throw new ArgumentNullException(nameof(context));
+            if(!IsSucessStatusCode(context))  return;
+            if(context.Response.Content == null) return;
+            Dictionary<string, object> actionArguments
+                = context.ActionContext?.ActionArguments ?? throw new HttpResponseException(HttpStatusCode.BadRequest);
 
-            if (!userIdArgumentName.Equals("userId"))
+            var userId = GetUserId(actionArguments);
+
+            var resonse = await context.Response.Content.ReadAsStringAsync();
+            var resource = JsonConvert.DeserializeObject<object>(resonse) as JObject;
+            if (resource == null) return;
+
+            if(context.Request == null) return;
+            var service = ResolveService(context);
+
+            var removeRestrictedInfo = service.RemoveRestrictedInfo(userId, resource);
+            if(!removeRestrictedInfo) return;
+
+            context.Response.Content = 
+                new ObjectContent<JObject>(resource, context.ActionContext.ControllerContext.Configuration.Formatters.JsonFormatter);
+        }
+
+        static RestrictedUacContractService ResolveService(HttpActionExecutedContext context)
+        {
+            IDependencyScope scope = context.Request.GetDependencyScope();
+            if (scope == null) throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            object service = scope.GetService(typeof(RestrictedUacContractService));
+            if (service == null) throw new HttpResponseException(HttpStatusCode.InternalServerError);
+            return (RestrictedUacContractService)service;
+        }
+
+        long GetUserId(Dictionary<string, object> actionArguments)
+        {
+            long userId;
+            if (!actionArguments.ContainsKey(userIdArgumentName))
             {
-                context.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
             }
-
-            if (context.Response.StatusCode == HttpStatusCode.NotAcceptable || context.Response.Content == null)
+            try
             {
-                return;
+                userId = (long)actionArguments[userIdArgumentName];
             }
-
-            dynamic restrictedResource = await context.Response.Content.ReadAsAsync<object>(token);
-
-            if (((string)restrictedResource.Type).Equals("No Parameter"))
+            catch (InvalidCastException)
             {
-                context.Response.StatusCode = HttpStatusCode.BadRequest;
-                return;
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
+            return userId;
+        }
 
-            var userId = long.Parse(context.Request.RequestUri.AbsolutePath
-                .Split(new []{"/"}, StringSplitOptions.RemoveEmptyEntries)[1]);
-
-            JObject resourceToJObject = JObject.FromObject(restrictedResource);
-            restrictedUacContractService.RemoveRestrictedInfo(
-                userId,
-                resourceToJObject);
-
-            context.Response = context.Request.CreateResponse(HttpStatusCode.OK, resourceToJObject);
+        static bool IsSucessStatusCode(HttpActionExecutedContext context)
+        {
+            if (context.Exception != null) return false;
+            if (context.Response == null) return false;
+            return context.Response.IsSuccessStatusCode;
         }
 
         #endregion
