@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
+using SampleWebApi.DomainModel;
 using SampleWebApi.Repositories;
 
 namespace SampleWebApi.Services
@@ -31,7 +33,34 @@ namespace SampleWebApi.Services
              * else it will return false.
              */
 
-            throw new NotImplementedException();
+            if (roleRepository.Get(userId) == Role.Admin)
+            {
+                return false;
+            }
+            var linksArray = restrictedResource["links"] as JArray;
+            if (linksArray == null)
+            {
+                return false;
+            }
+            var restrictedLinks = linksArray.Where(link =>
+            {
+                var linkObj = link as JObject;
+                var restrictedProp = linkObj?["restricted"];
+                if (restrictedProp?.Type != JTokenType.Boolean)
+                {
+                    return false;
+                }
+                return restrictedProp.Value<bool>();
+            }).ToArray();
+            if (restrictedLinks.Length == 0)
+            {
+                return false;
+            }
+            foreach (JToken token in restrictedLinks)
+            {
+                linksArray.Remove(token);
+            }
+            return true;
         }
     }
 }
