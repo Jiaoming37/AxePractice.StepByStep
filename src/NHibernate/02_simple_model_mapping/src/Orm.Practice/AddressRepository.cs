@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
-using FluentNHibernate.Cfg;
-using FluentNHibernate.Cfg.Db;
 using NHibernate;
-using NHibernate.Context;
-using NHibernate.Linq;
 
 namespace Orm.Practice
 {
@@ -15,7 +10,11 @@ namespace Orm.Practice
 
         public AddressRepository(ISession session)
         {
-            this.session = session ?? throw new ArgumentNullException(nameof(session));
+            if (session == null)
+            {
+                throw new ArgumentNullException(nameof(session));
+            }
+            this.session = session;
         }
 
         public Address Get(int id)
