@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
@@ -57,11 +59,13 @@ namespace Orm.Practice
              */
 
             connectionString = "Data Source='localhost';Initial Catalog='AdventureWorks2014';Integrated Security='True'";
-            FluentConfiguration fluentConfiguration = Fluently.Configure()
-                .Database(MsSqlConfiguration.MsSql2005.ConnectionString(connectionString).ShowSql());
-            FluentConfiguration configuration = fluentConfiguration
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Address>());
-            return configuration
+
+            return Fluently.Configure()
+                .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString).ShowSql())
+                .Mappings(m => m.AutoMappings.Add(AutoMap
+                    .Assembly(Assembly.GetExecutingAssembly(), new StoreConfiguration())
+                    .UseOverridesFromAssembly(Assembly.GetExecutingAssembly())
+                ))
                 .BuildSessionFactory();
 
             #endregion
@@ -84,6 +88,15 @@ namespace Orm.Practice
         {
             session?.Dispose();
             sessionFactory?.Dispose();
+        }
+    }
+
+
+    public class StoreConfiguration : DefaultAutomappingConfiguration
+    {
+        public override bool ShouldMap(Type type)
+        {
+            return type == typeof(Address);
         }
     }
 }

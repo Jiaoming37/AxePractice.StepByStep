@@ -1,4 +1,5 @@
-﻿using FluentNHibernate.Mapping;
+﻿using FluentNHibernate.Automapping;
+using FluentNHibernate.Automapping.Alterations;
 
 namespace Orm.Practice
 {
@@ -29,16 +30,13 @@ namespace Orm.Practice
      * use `Id` as its name in C#, we should explicitly specify its name as
      * `AddressID`.
      */
-    public class AddressMap : ClassMap<Address>
+
+    public class AddressMappingOverride : IAutoMappingOverride<Address>
     {
-        public AddressMap()
+        public void Override(AutoMapping<Address> mapping)
         {
-            Table("Person.Address");
-            Id(a => a.Id).Column("AddressID");
-            Map(a => a.AddressLine1).Column("AddressLine1");
-            Map(a => a.AddressLine2).Column("AddressLine2");
-            Map(a => a.City).Column("City");
-            Map(a => a.PostalCode).Column("PostalCode");
+            mapping.Table("Person.Address");
+            mapping.Id(a => a.Id).Column("AddressID");
         }
     }
 
