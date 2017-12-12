@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate;
+using NHibernate.Linq;
 
 namespace Orm.Practice
 {
@@ -17,7 +18,7 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return Session.Query<Address>().SingleOrDefault(address => address.Id == id);
 
             #endregion
         }
@@ -26,7 +27,7 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return Session.Query<Address>().Where(a => ids.Contains(a.Id)).ToList();
 
             #endregion
         }
@@ -35,7 +36,7 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return Session.Query<Address>().Where(address => address.City == city).OrderBy(a => a.Id).ToList();
 
             #endregion
         }
@@ -44,7 +45,7 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return GetByCityAsync(city, CancellationToken.None);
 
             #endregion
         }
@@ -54,7 +55,10 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return await Session.Query<Address>()
+                .Where(a => a.City == city)
+                .OrderBy(a => a.Id)
+                .ToListAsync(cancellationToken);
 
             #endregion
         }
@@ -63,7 +67,11 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return Session.Query<Address>()
+                .Where(a => a.City == city)
+                .OrderBy(a => a.Id)
+                .Select(a => new KeyValuePair<int, string>(a.Id, a.AddressLine1))
+                .ToList();
 
             #endregion
         }
@@ -72,7 +80,7 @@ namespace Orm.Practice
         {
             #region Please implement the method
 
-            throw new NotImplementedException();
+            return Session.Query<Address>().Where(a => a.City == city).Select(a => a.PostalCode).Distinct().ToList();
 
             #endregion
         }
