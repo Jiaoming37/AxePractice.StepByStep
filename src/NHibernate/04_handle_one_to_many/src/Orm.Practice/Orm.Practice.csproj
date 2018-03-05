@@ -73,6 +73,10 @@
   <ItemGroup>
     <Compile Include="Entities\Child.cs" />
     <Compile Include="Entities\Parent.cs" />
+    <Compile Include="Entities\Student.cs" />
+    <Compile Include="Entities\Teacher.cs" />
+    <Compile Include="ManyToManyModifyFacts.cs" />
+    <Compile Include="ManyToManyQueryFacts.cs" />
     <Compile Include="OneToManyModifyFacts.cs" />
     <Compile Include="OneToManyQueryFacts.cs" />
     <Compile Include="OrmFactBase.cs" />
