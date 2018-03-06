@@ -32,7 +32,9 @@ namespace Orm.Practice
             MsSqlConfiguration config = MsSqlConfiguration.MsSql2012
                 .ConnectionString(connectionString)
                 .ShowSql()
-                .FormatSql();
+                .FormatSql()
+                .Raw(NHibernate.Cfg.Environment.UseSqlComments, "true")
+                .AdoNetBatchSize(0);
 
             Console.SetOut(outputCache);
             Assembly currentAssembly = Assembly.GetExecutingAssembly();

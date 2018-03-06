@@ -25,7 +25,7 @@ namespace Orm.Practice.Entities
             Map(c => c.Name).Column("Name");
             Map(c => c.IsForQuery).Column("IsForQuery");
             HasManyToMany(c => c.Teachers).ParentKeyColumn("StudentID").ChildKeyColumn("TeacherID")
-                .Table("student_teacher").Cascade.AllDeleteOrphan();
+                .Table("student_teacher").Cascade.All();
         }
     }
 }
