@@ -193,7 +193,8 @@ namespace Orm.Practice
             Teacher teacher3Result = Session.Query<Teacher>().FirstOrDefault(s => s.Name == "teacher 3");
             Teacher teacher4Result = Session.Query<Teacher>().FirstOrDefault(s => s.Name == "teacher 4");
 
-            Assert.NotNull(studentResult);
+            Assert.Equal(1, studentResult.Teachers.Count);
+            Assert.NotNull(studentResult.Teachers.Single(t => t.Name == "teacher 4"));
             Assert.Null(teacher3Result);
             Assert.NotNull(teacher4Result);
         }
