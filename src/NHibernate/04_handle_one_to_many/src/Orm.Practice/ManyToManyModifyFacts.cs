@@ -171,6 +171,33 @@ namespace Orm.Practice
             Assert.Null(teacher4Result);
         }
 
+
+        [Fact]
+        public void should_delete_the_teacher_by_teacher_when_save_update()
+        {
+            var teacher3 = new Teacher { IsForQuery = false, Name = "teacher 3" };
+            var student3 = new Student { IsForQuery = false, Name = "student 3" };
+            teacher3.Students.Add(student3);
+            var teacher4 = new Teacher { IsForQuery = false, Name = "teacher 4" };
+            student3.Teachers.Add(teacher4);
+
+            Session.Save(teacher3);
+            Session.Flush();
+
+            Session.Delete(Session.Query<Teacher>().First(t => t.Name == "teacher 3"));
+            Session.Flush();
+
+            Session.Clear();
+
+            Student studentResult = Session.Query<Student>().FirstOrDefault(s => s.Name == "student 3");
+            Teacher teacher3Result = Session.Query<Teacher>().FirstOrDefault(s => s.Name == "teacher 3");
+            Teacher teacher4Result = Session.Query<Teacher>().FirstOrDefault(s => s.Name == "teacher 4");
+
+            Assert.NotNull(studentResult);
+            Assert.Null(teacher3Result);
+            Assert.NotNull(teacher4Result);
+        }
+
         [Fact]
         public void should_only_delete_relation_by_teacher()
         {
