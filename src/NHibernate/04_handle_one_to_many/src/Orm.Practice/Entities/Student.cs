@@ -21,11 +21,14 @@ namespace Orm.Practice.Entities
         public StudentMap()
         {
             Table("student");
-            Id(c => c.StudentId).Column("StudentID"); ;
+            Id(c => c.StudentId).Column("SID"); ;
             Map(c => c.Name).Column("Name");
             Map(c => c.IsForQuery).Column("IsForQuery");
-            HasManyToMany(c => c.Teachers).ParentKeyColumn("StudentID").ChildKeyColumn("TeacherID")
-                .Table("student_teacher").Cascade.All();
+            HasManyToMany(c => c.Teachers)
+                .ParentKeyColumn("StudentID")
+                .ChildKeyColumn("TeacherID")
+                .Table("student_teacher")
+                .Cascade.All();
         }
     }
 }

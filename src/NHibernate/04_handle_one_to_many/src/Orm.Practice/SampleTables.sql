@@ -167,6 +167,9 @@ INSERT INTO [dbo].[student_teacher] VALUES
     ('FA7067F3-2B27-46BA-88E6-FEC9B26CA46E', '4638F01A-B370-4596-905B-83C576F7C94F');
 GO
 
+EXEC sp_RENAME 'teacher.TeacherID' , 'tid', 'COLUMN'
+EXEC sp_RENAME 'student.StudentID' , 'sid', 'COLUMN'
+
 -- ****************************************
 -- Shrink Database
 -- ****************************************
